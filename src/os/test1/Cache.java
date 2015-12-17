@@ -5,6 +5,7 @@
  */
 package os.test1;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 /**
@@ -29,7 +30,27 @@ public class Cache {
         this.recently=new int [this.capacity];
         this.policy=policy;
         this.numofProcess=0;
+        q =new LinkedList<Process>();
+
         
+    }
+    public Cache(int capacity ){
+         this.capacity=capacity;
+        this.caschedProcess=new Process[this.capacity];
+        this.frequency=new int [this.capacity];
+        this.recently=new int [this.capacity];
+        this.policy="LRU";
+        this.numofProcess=0;
+        q =new LinkedList<Process>();
+    }
+    public Cache(String policy ){
+         this.capacity=4;
+        this.caschedProcess=new Process[this.capacity];
+        this.frequency=new int [this.capacity];
+        this.recently=new int [this.capacity];
+        this.policy=policy;
+        this.numofProcess=0;
+        q =new LinkedList<Process>();
     }
     public Cache(){
         capacity=4;
@@ -38,7 +59,9 @@ public class Cache {
         this.recently=new int [this.capacity];
         this.policy="LFU";
         this.numofProcess=0;
+        q =new LinkedList<Process>();
     }
+   
     public void printinfo (){
         for(int i=0 ; i<size ; i++){
             System.out.println("process :"+i+caschedProcess[i].getProcessName());
@@ -78,7 +101,7 @@ public class Cache {
     }
      private boolean addProcess (Process newProcess){
          
-         if(size<=capacity){
+         if(size<capacity){
              q.add(newProcess);
              caschedProcess[size]=newProcess;
              frequency[size]++;
@@ -93,12 +116,16 @@ public class Cache {
          
      
      private void FIFO (Process newProcess){      //add process using First In First Out (FIFO)Raplacement algorithm
-        q.poll();
+        Process temp = q.poll();
         q.add(newProcess);
+        for(int i=0 ; i<capacity ;i++){
+            if(this.caschedProcess[i]==temp)
+                caschedProcess[i]=newProcess;
+        }
     }
     
       private void LRU (Process newProcess) {      //add process using Least Recently Used (LRU)Raplacement algorithm
-         int minr=0,minpindx=0;
+         int minr=Integer.MAX_VALUE,minpindx=0;
           for(int i=0 ; i<capacity ; i++){
               if(recently[i]<minr){
                   minr=recently[i];
@@ -111,14 +138,14 @@ public class Cache {
     }
       private void LFU (Process newProcess) {       //add process using Least frequently Used (LFU)Raplacement algorithm
           System.out.println("LFU is used to replace.....");
-          int minf=0,minpindx=0;
+          int minf=Integer.MAX_VALUE,minpindx=0;
           for(int i=0 ; i<capacity ; i++){
               if(frequency[i]<minf){
                   minf=frequency[i];
                   minpindx=i;
               }
           }
-          System.out.println("replace "+minpindx+"process with min freq "+minf);
+          System.out.println("replace "+caschedProcess[minpindx].getProcessName()+"process with min freq "+minf);
           caschedProcess[minpindx]=newProcess;
           frequency[minpindx]=1;
         

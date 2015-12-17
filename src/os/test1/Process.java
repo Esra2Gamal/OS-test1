@@ -1,7 +1,7 @@
 
 package os.test1;
 
-public class Process implements Runnable implements  {
+public class Process implements Runnable {
     private int excuteTime;
     private String name;
     private int priority;
